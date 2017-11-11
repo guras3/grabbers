@@ -1,10 +1,10 @@
 twitter:
   oauth:
-    consumerKey: PJtdxoktSsdIDSOSJZjpjmMdS
-    consumerSecret: 1Km73IpOsHGkKk0nPV8EUzTb8GR9C7PfgI1hw3YRzxBgHH8iGQ
-    accessToken: 3352860858-d0kYwUGO8mz0EvgLNXA7I8m8jGXPv1jde1shHvw
-    accessTokenSecret: G3WSe6qXCNPdyVufwYHKX4zaPBl2awRc6MTp1Q3oQaOH5
+    consumerKey: 1
+    consumerSecret: 1
+    accessToken: 1
+    accessTokenSecret: 1
 
 mongo:
-  host: localhost
-  port: 27017
+  host: 1
+  port: 1
