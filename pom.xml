@@ -12,6 +12,7 @@
 
 	<modules>
         <module>twitter-streaming-grabber</module>
+        <module>grabbers-core</module>
     </modules>
 
 	<parent>

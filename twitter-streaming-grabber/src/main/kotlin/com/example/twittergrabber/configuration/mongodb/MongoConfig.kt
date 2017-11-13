@@ -7,10 +7,12 @@ import com.mongodb.MongoClient
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.data.mongodb.config.AbstractMongoConfiguration
+import org.springframework.data.mongodb.core.convert.DefaultMongoTypeMapper
+import org.springframework.data.mongodb.core.convert.MappingMongoConverter
 
 @Configuration
 @EnableConfigurationProperties(MongoProperties::class)
-class MongoConfig() : AbstractMongoConfiguration() {
+class MongoConfig : AbstractMongoConfiguration() {
 
     @Autowired
     lateinit var mongoProperties: MongoProperties
@@ -26,5 +28,11 @@ class MongoConfig() : AbstractMongoConfiguration() {
                 .build()
 
         return MongoClient(ServerAddress(mongoProperties.host, mongoProperties.port.toInt()), options)
+    }
+
+    override fun mappingMongoConverter(): MappingMongoConverter {
+        return super.mappingMongoConverter().also {
+            it.typeMapper = DefaultMongoTypeMapper(null)
+        }
     }
 }
