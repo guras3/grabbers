@@ -1,0 +1,10 @@
+twitter:
+  oauth:
+    consumerKey: 1
+    consumerSecret: 1
+    accessToken: 1
+    accessTokenSecret: 1
+
+mongo:
+  host: 1
+  port: 1
