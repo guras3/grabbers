@@ -18,7 +18,7 @@ class MongoConfig : AbstractMongoConfiguration() {
     lateinit var mongoProperties: MongoProperties
 
     public override fun getDatabaseName(): String {
-        return "posts"
+        return "data_set"
     }
 
     override fun mongoClient(): MongoClient {

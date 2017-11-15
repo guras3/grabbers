@@ -11,8 +11,8 @@
 	<name>grabbers</name>
 
 	<modules>
-        <module>twitter-streaming-grabber</module>
-        <module>grabbers-core</module>
+		<module>grabbers-core</module>
+		<module>twitter-streaming-grabber</module>
     </modules>
 
 	<parent>
@@ -93,6 +93,5 @@
 			</snapshots>
 		</pluginRepository>
 	</pluginRepositories>
-
 
 </project>
