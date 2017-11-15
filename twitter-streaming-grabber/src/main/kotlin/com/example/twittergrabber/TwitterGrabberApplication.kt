@@ -1,7 +1,7 @@
 package com.example.twittergrabber
 
 import com.example.core.domain.*
-import com.example.core.services.BufferedPersistentMessageQueue
+import com.example.core.services.PersistentMessageQueue
 import mu.KLogging
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.SpringBootApplication
@@ -24,7 +24,7 @@ class TwitterGrabberApplication {
     @Autowired
     lateinit var twitterStreamFactory: TwitterStreamFactory
     @Autowired
-    lateinit var mongoPersistentMessageQueue: BufferedPersistentMessageQueue
+    lateinit var persistentMessageQueue: PersistentMessageQueue
 
     @PostConstruct
     fun openStream() {
@@ -39,7 +39,7 @@ class TwitterGrabberApplication {
                 arrayOf("ru"))
 
         twitterStream.onException { ex -> logger.error(ex) { } }
-                .onStatus { status -> mongoPersistentMessageQueue.offer(convertToMessage(status)) }
+                .onStatus { status -> persistentMessageQueue.offer(convertToMessage(status)) }
                 .filter(filterQuery)
     }
 

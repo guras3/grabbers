@@ -13,7 +13,7 @@ import java.util.concurrent.LinkedBlockingQueue
 @Component
 @Profile("prod")
 @EnableScheduling
-class BufferedPersistentMessageQueue(private val messageRepository: MessageRepository) : PersistentMessageQueue {
+internal class BufferedPersistentMessageQueue(private val messageRepository: MessageRepository) : PersistentMessageQueue {
 
     private companion object : KLogging()
 
