@@ -16,7 +16,7 @@ import javax.annotation.PostConstruct
         "com.example.core",
         "com.example.twittergrabber"
 ))
-@EnableMongoRepositories
+@EnableMongoRepositories(basePackages = arrayOf("com.example.core.repositories"))
 class TwitterGrabberApplication {
 
     private companion object : KLogging()

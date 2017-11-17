@@ -3,7 +3,6 @@ package com.example.twittergrabber.configuration.twitter
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import twitter4j.TwitterStream
 import twitter4j.TwitterStreamFactory
 import twitter4j.conf.ConfigurationBuilder
 

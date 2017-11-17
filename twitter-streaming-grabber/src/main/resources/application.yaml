@@ -8,3 +8,7 @@ twitter:
 mongo:
   host: localhost
   port: 27017
+
+spring:
+  profiles:
+    active: prod
