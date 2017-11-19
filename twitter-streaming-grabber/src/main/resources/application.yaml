@@ -12,3 +12,9 @@ mongo:
 spring:
   profiles:
     active: prod
+server:
+  port: 8081
+
+logging:
+  level:
+    org.springframework.data.mongodb: DEBUG
