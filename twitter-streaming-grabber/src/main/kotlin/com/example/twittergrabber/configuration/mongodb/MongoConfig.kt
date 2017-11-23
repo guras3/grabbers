@@ -1,11 +1,11 @@
 package com.example.twittergrabber.configuration.mongodb
 
-import com.mongodb.MongoClientOptions
-import org.springframework.context.annotation.Configuration
-import com.mongodb.ServerAddress
 import com.mongodb.MongoClient
+import com.mongodb.MongoClientOptions
+import com.mongodb.ServerAddress
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.context.properties.EnableConfigurationProperties
+import org.springframework.context.annotation.Configuration
 import org.springframework.data.mongodb.config.AbstractMongoConfiguration
 import org.springframework.data.mongodb.core.convert.DefaultMongoTypeMapper
 import org.springframework.data.mongodb.core.convert.MappingMongoConverter

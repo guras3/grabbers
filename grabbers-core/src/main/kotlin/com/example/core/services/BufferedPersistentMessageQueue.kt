@@ -33,6 +33,7 @@ internal class BufferedPersistentMessageQueue(private val messageRepository: Mes
 
         val batch = LinkedList<Message>()
         queue.drainTo(batch)
+        logger.debug { "save batch size=${batch.size}" }
         messageRepository.saveAll(batch)
     }
 

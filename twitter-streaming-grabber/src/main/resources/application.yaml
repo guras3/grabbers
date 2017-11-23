@@ -8,3 +8,13 @@ twitter:
 mongo:
   host: localhost
   port: 27017
+
+spring:
+  profiles:
+    active: prod
+server:
+  port: 8081
+
+logging:
+  level:
+    org.springframework.data.mongodb: DEBUG
