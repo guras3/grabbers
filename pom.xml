@@ -11,8 +11,10 @@
     <name>grabbers</name>
 
     <modules>
-        <module>grabbers-core</module>
-        <module>twitter-streaming-grabber</module>
+        <module>data-api</module>
+        <module>data-saver</module>
+        <module>twitter-grabber</module>
+        <!--<module>map-ui</module>-->
     </modules>
 
     <parent>
@@ -25,7 +27,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <kotlin.compiler.incremental>true</kotlin.compiler.incremental>
+        <!--<kotlin.compiler.incremental>true</kotlin.compiler.incremental>-->
         <java.version>1.8</java.version>
     </properties>
 
@@ -52,7 +54,6 @@
                 <artifactId>twitter4j-async</artifactId>
                 <version>4.0.6</version>
             </dependency>
-
         </dependencies>
     </dependencyManagement>
 
