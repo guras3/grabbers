@@ -2,14 +2,11 @@ package com.example.datasaver
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
+import org.springframework.scheduling.annotation.EnableScheduling
 
 @SpringBootApplication
-class App {
-
-
-
-}
-
+@EnableScheduling
+class App
 
 fun main(args: Array<String>) {
     runApplication<App>(*args)

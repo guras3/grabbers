@@ -9,7 +9,7 @@ data class Message(
         val text: String,
         val messageType: MessageTypeEnum,
         val origin: Origin,
-        val location: Location
+        val location: Location?
 ) {
     @Id
     val guid: String? = null
