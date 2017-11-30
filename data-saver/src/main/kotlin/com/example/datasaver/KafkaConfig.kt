@@ -12,11 +12,29 @@ import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory
 import org.springframework.kafka.config.KafkaListenerContainerFactory
 import org.springframework.kafka.core.*
 import org.springframework.kafka.listener.ConcurrentMessageListenerContainer
-import java.util.*
+import org.apache.kafka.clients.admin.NewTopic
+import org.springframework.kafka.core.KafkaAdmin
+import java.util.HashMap
 
 @Configuration
 @EnableKafka
 class KafkaConfig {
+
+    @Bean
+    fun admin(): KafkaAdmin {
+        val props = HashMap<String, Any>()
+        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "127.0.0.1:9092")
+        return KafkaAdmin(props)
+    }
+
+    /**
+     * FOR TESTING PURPOSES
+     * по хорошему, надо конфигурировать отдельно.
+     */
+    @Bean
+    fun messagesTopic(): NewTopic {
+        return NewTopic("messages", 4, 1.toShort())
+    }
 
     @Bean
     fun kafkaListenerContainerFactory(): KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<Int, Message>> {
