@@ -1,7 +1,6 @@
 package com.example.datasaver
 
 import com.example.domain.*
-import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.core.annotation.Order
 import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.stereotype.Component
@@ -9,7 +8,6 @@ import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.scheduling.annotation.Scheduled
 import java.util.*
-
 
 @Component
 @Order(1)
