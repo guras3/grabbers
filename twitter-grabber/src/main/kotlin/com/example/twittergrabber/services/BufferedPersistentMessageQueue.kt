@@ -1,6 +1,7 @@
 package com.example.twittergrabber.services
 
 import com.example.domain.Message
+import com.example.domain.MongoMessage
 import com.example.twittergrabber.repositories.MessageRepository
 import mu.KLogging
 import org.springframework.context.annotation.Profile
@@ -34,7 +35,8 @@ internal class BufferedPersistentMessageQueue(private val messageRepository: Mes
         val batch = LinkedList<Message>()
         queue.drainTo(batch)
         logger.debug { "save batch size=${batch.size}" }
-        messageRepository.saveAll(batch)
+        val map: List<MongoMessage> = batch.map { MongoMessage(it) }
+        messageRepository.saveAll(map)
     }
 
 }

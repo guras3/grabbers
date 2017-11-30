@@ -1,12 +1,13 @@
 package com.example.twittergrabber.repositories
 
 import com.example.domain.Message
+import com.example.domain.MongoMessage
 import org.springframework.data.mongodb.core.geo.GeoJsonPolygon
 import org.springframework.data.mongodb.repository.MongoRepository
 import org.springframework.data.mongodb.repository.Query
 import java.util.*
 
-interface MessageRepository : MongoRepository<Message, String> {
+interface MessageRepository : MongoRepository<MongoMessage, String> {
     @Query("""
         { ${'$'}and: [
             { ${'$'}or: [
