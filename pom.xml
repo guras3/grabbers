@@ -12,6 +12,7 @@
 
     <modules>
         <module>data-api</module>
+        <module>data-kafka-starter</module>
         <module>data-saver</module>
         <module>twitter-grabber</module>
         <!--<module>map-ui</module>-->
