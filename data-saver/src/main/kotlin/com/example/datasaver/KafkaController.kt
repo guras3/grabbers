@@ -1,19 +1,19 @@
 package com.example.datasaver
 
 import com.example.domain.*
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.core.annotation.Order
 import org.springframework.kafka.annotation.KafkaListener
-import org.springframework.stereotype.Component
 import org.springframework.kafka.core.KafkaTemplate
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.scheduling.annotation.Scheduled
+import org.springframework.stereotype.Component
 import java.util.*
 
 @Component
 @Order(1)
 class KafkaController {
 
-    @KafkaListener(topics = arrayOf("messages"))
+    @KafkaListener(id = "data-saver", topics = arrayOf("messages"))
     fun listen(message: Message) {
         println(message)
     }
@@ -26,7 +26,7 @@ class KafkaController {
 class KafkaProducer {
 
     @Autowired
-    lateinit var template: KafkaTemplate<Int, Message>
+    lateinit var template: KafkaTemplate<String, Message>
 
     @Scheduled(fixedDelay = 1000)
     fun send() {
