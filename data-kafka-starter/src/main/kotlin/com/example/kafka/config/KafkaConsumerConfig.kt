@@ -47,7 +47,7 @@ class KafkaConsumerConfig {
 
         return ConcurrentKafkaListenerContainerFactory<String, Message>().also {
             it.consumerFactory = consumerFactory
-            it.setConcurrency(3)
+            it.setConcurrency(4)
             it.containerProperties.pollTimeout = 3000
         }
     }

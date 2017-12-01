@@ -1,7 +1,8 @@
-package com.example.twittergrabber.services
+package com.example.datasaver.services
 
+import com.example.datasaver.model.MongoMessage
+import com.example.datasaver.repositories.MessageRepository
 import com.example.domain.Message
-import com.example.twittergrabber.repositories.MessageRepository
 import mu.KLogging
 import org.springframework.context.annotation.Profile
 import org.springframework.scheduling.annotation.EnableScheduling
@@ -13,19 +14,20 @@ import java.util.concurrent.LinkedBlockingQueue
 @Component
 @Profile("prod")
 @EnableScheduling
-internal class BufferedPersistentMessageQueue(private val messageRepository: MessageRepository) : PersistentMessageQueue {
+internal class BufferedPersistentMessageQueue(private val messageRepository: MessageRepository)  {
 
     private companion object : KLogging()
 
     private val queue = LinkedBlockingQueue<Message>(50)
 
-    override fun offer(message: Message): Boolean {
+    /* todo : read from kafka
+    fun offer(message: Message): Boolean {
         val offered = queue.offer(message)
         if (!offered) {
             logger.warn { "message rejected due to queue overflow" }
         }
         return offered
-    }
+    }*/
 
     @Scheduled(fixedDelay = 5_000)
     private fun persist() {
@@ -34,7 +36,8 @@ internal class BufferedPersistentMessageQueue(private val messageRepository: Mes
         val batch = LinkedList<Message>()
         queue.drainTo(batch)
         logger.debug { "save batch size=${batch.size}" }
-        messageRepository.saveAll(batch)
+        val map: List<MongoMessage> = batch.map { MongoMessage.fromExternal(it) }
+        messageRepository.saveAll(map)
     }
 
 }

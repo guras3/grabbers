@@ -1,14 +1,12 @@
 package com.example.twittergrabber
 
-import com.example.twittergrabber.services.PersistentMessageQueue
 import com.example.domain.*
+import com.example.kafka.EnableDataKafkaProducers
 import mu.KLogging
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
-import org.springframework.data.mongodb.core.geo.GeoJsonPoint
-import org.springframework.data.mongodb.core.geo.GeoJsonPolygon
-import org.springframework.data.mongodb.repository.config.EnableMongoRepositories
+import org.springframework.kafka.core.KafkaTemplate
 import twitter4j.FilterQuery
 import twitter4j.GeoLocation
 import twitter4j.Status
@@ -16,7 +14,7 @@ import twitter4j.TwitterStreamFactory
 import javax.annotation.PostConstruct
 
 @SpringBootApplication
-@EnableMongoRepositories
+@EnableDataKafkaProducers
 class TwitterGrabberApplication {
 
     private companion object : KLogging()
@@ -24,7 +22,7 @@ class TwitterGrabberApplication {
     @Autowired
     lateinit var twitterStreamFactory: TwitterStreamFactory
     @Autowired
-    lateinit var persistentMessageQueue: PersistentMessageQueue
+    lateinit var kafka: KafkaTemplate<String, Message>
 
     @PostConstruct
     fun openStream() {
@@ -39,7 +37,10 @@ class TwitterGrabberApplication {
                 arrayOf("ru"))
 
         twitterStream.onException { ex -> logger.error(ex) { } }
-                .onStatus { status -> persistentMessageQueue.offer(convertToMessage(status)) }
+                .onStatus { status ->
+                    val message = convertToMessage(status).also { println(it) }
+                    kafka.send("messages", message.id, message)
+                }
                 .filter(filterQuery)
 
     }
@@ -60,21 +61,16 @@ class TwitterGrabberApplication {
             location = buildLocation(status)
     )
 
-    private fun buildCoordinates(geoLocation: GeoLocation?): GeoJsonPoint? {
-        return geoLocation?.toGeoJsonPoint()
-    }
-
     private fun buildLocation(status: Status): Location {
         return when (status.place.boundingBoxType) {
             "Polygon" -> {
                 val points = status.place.boundingBoxCoordinates[0].map { it.toGeoJsonPoint() }
-                //first and last position must be the same
-                val boundingBox = GeoJsonPolygon(points + points.first())
+                val exactCoordinates = status.geoLocation?.let { it.toGeoJsonPoint() }
                 Location(country = status.place.country,
                         locationType = status.place.placeType,
                         locationName = status.place.fullName,
-                        boundingBox = boundingBox,
-                        exactCoordinates = buildCoordinates(status.geoLocation)
+                        boundingBox = points,
+                        exactCoordinates = exactCoordinates
                 )
             }
             else -> {
@@ -84,10 +80,7 @@ class TwitterGrabberApplication {
         }
     }
 
-    private fun GeoLocation.toGeoJsonPoint(): GeoJsonPoint {
-        // GeoJSON specifies a longitude then a latitude,
-        return GeoJsonPoint(this.longitude, this.latitude)
-    }
+    private fun GeoLocation.toGeoJsonPoint() = GeoPoint(longitude = this.longitude, latitude = this.latitude)
 }
 
 fun main(args: Array<String>) {

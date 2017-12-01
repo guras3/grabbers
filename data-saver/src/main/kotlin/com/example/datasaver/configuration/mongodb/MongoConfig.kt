@@ -1,4 +1,4 @@
-package com.example.twittergrabber.configuration.mongodb
+package com.example.datasaver.configuration.mongodb
 
 import com.mongodb.MongoClient
 import com.mongodb.MongoClientOptions
@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.data.mongodb.config.AbstractMongoConfiguration
 import org.springframework.data.mongodb.core.convert.DefaultMongoTypeMapper
 import org.springframework.data.mongodb.core.convert.MappingMongoConverter
+
 
 @Configuration
 @EnableConfigurationProperties(MongoProperties::class)
@@ -33,6 +34,23 @@ class MongoConfig : AbstractMongoConfiguration() {
     override fun mappingMongoConverter(): MappingMongoConverter {
         return super.mappingMongoConverter().also {
             it.typeMapper = DefaultMongoTypeMapper(null)
+
         }
     }
+
+    /*override fun customConversions(): CustomConversions {
+        val converterList = ArrayList<Converter<*, *>>()
+        converterList.add(org.springframework.data.mongodb.test.PersonReadConverter())
+        converterList.add(org.springframework.data.mongodb.test.PersonWriteConverter())
+        return CustomConversions(converterList)
+    }
+
+    inner class PersonReadConverter : Converter<Document, Person> {
+
+        override fun convert(source: Document): Person? {
+            val p = Person(source.get("_id") as ObjectId, source.get("name") as String)
+            p.setAge(source.get("age") as Int)
+            return p
+        }
+    }*/
 }
