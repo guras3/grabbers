@@ -1,13 +1,10 @@
 package com.example.datasaver
 
 import com.example.kafka.EnableDataKafkaConsumers
-import com.example.kafka.EnableDataKafkaProducers
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
-import org.springframework.scheduling.annotation.EnableScheduling
 
 @SpringBootApplication
-@EnableScheduling
 @EnableDataKafkaConsumers
 class DataSaverApplication
 

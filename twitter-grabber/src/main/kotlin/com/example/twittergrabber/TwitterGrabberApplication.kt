@@ -38,7 +38,7 @@ class TwitterGrabberApplication {
 
         twitterStream.onException { ex -> logger.error(ex) { } }
                 .onStatus { status ->
-                    val message = convertToMessage(status).also { println(it) }
+                    val message = convertToMessage(status)
                     kafka.send("messages", message.id, message)
                 }
                 .filter(filterQuery)
