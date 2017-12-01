@@ -1,4 +1,4 @@
-package com.example.twittergrabber.configuration.mongodb
+package com.example.datasaver.configuration.mongodb
 
 import com.mongodb.MongoClient
 import com.mongodb.MongoClientOptions

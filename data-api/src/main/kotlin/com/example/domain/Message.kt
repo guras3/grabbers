@@ -1,7 +1,5 @@
 package com.example.domain
 
-import org.springframework.data.annotation.Id
-import org.springframework.data.mongodb.core.mapping.Document
 import java.util.*
 
 data class Message(
@@ -10,16 +8,7 @@ data class Message(
         val origin: Origin,
         val location: Location?
 ) {
-    val guid: String? = null
+    val id: String = UUID.randomUUID().toString()
     val grabbedAt: Date = Date()
-
-}
-
-@Document(collection = "messages")
-data class MongoMessage(
-        val message: Message
-) {
-    @Id
-    val id = message.guid
-    private val version: String = "1"
+    val version = 1
 }

@@ -5,9 +5,6 @@ twitter:
     accessToken: 3352860858-d0kYwUGO8mz0EvgLNXA7I8m8jGXPv1jde1shHvw
     accessTokenSecret: G3WSe6qXCNPdyVufwYHKX4zaPBl2awRc6MTp1Q3oQaOH5
 
-mongo:
-  host: localhost
-  port: 27017
 
 spring:
   profiles:
