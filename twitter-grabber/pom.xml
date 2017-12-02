@@ -57,11 +57,7 @@
             <artifactId>data-kafka-starter</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>com.example</groupId>
-            <artifactId>data-kafka-starter</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
-        </dependency>
+
     </dependencies>
 
     <build>

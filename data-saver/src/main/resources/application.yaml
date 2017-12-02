@@ -1,3 +1,10 @@
 mongo:
   host: localhost
   port: 27017
+  databaseName: data_set
+
+data.kafka.consumers:
+  bootstrapServers:
+    - 127.0.0.1:9092
+  groupId: "data-saver"
+  concurrency: 1

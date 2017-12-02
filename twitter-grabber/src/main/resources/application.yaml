@@ -1,3 +1,6 @@
+server:
+  port: 8081
+
 twitter:
   oauth:
     consumerKey: PJtdxoktSsdIDSOSJZjpjmMdS
@@ -5,13 +8,6 @@ twitter:
     accessToken: 3352860858-d0kYwUGO8mz0EvgLNXA7I8m8jGXPv1jde1shHvw
     accessTokenSecret: G3WSe6qXCNPdyVufwYHKX4zaPBl2awRc6MTp1Q3oQaOH5
 
-
-spring:
-  profiles:
-    active: prod
-server:
-  port: 8081
-
-logging:
-  level:
-    org.springframework.data.mongodb: DEBUG
+data.kafka.producers:
+  bootstrapServers:
+    - 127.0.0.1:9092

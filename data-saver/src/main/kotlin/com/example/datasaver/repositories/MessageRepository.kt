@@ -12,7 +12,7 @@ internal interface MessageRepository : MongoRepository<MongoMessage, String> {
         { ${'$'}and: [
             { ${'$'}or: [
                 { "location.exactCoordinates" : { "${'$'}geoWithin" : { "${'$'}geometry" : ?0 } } },
-                { "location.boundingBox" : { "${'$'}geoIntersects" : { "${'$'}geometry" : ?0 } } }
+                { "location.polygon" : { "${'$'}geoIntersects" : { "${'$'}geometry" : ?0 } } }
               ]
             },
             { "grabbedAt": { "${'$'}gte" : ?1 }}

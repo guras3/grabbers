@@ -12,13 +12,13 @@ internal data class Location(
         val locationType: String?,
         val locationName: String?,
         @GeoSpatialIndexed(type = GeoSpatialIndexType.GEO_2DSPHERE)
-        val boundingBox: GeoJsonPolygon? = null,
+        val polygon: GeoJsonPolygon? = null,
         @GeoSpatialIndexed(type = GeoSpatialIndexType.GEO_2DSPHERE)
         val exactCoordinates: GeoJsonPoint? = null
 ) {
     init {
-        if (boundingBox == null && exactCoordinates == null) {
-            throw IllegalArgumentException("boundingBox == null && coordinates == null")
+        if (polygon == null && exactCoordinates == null) {
+            throw IllegalArgumentException("polygon == null && coordinates == null")
         }
     }
 
@@ -28,7 +28,7 @@ internal data class Location(
                     country = external.country,
                     locationType = external.locationType,
                     locationName = external.locationName,
-                    boundingBox = external.boundingBox?.let { toGeoJsonPolygon(it) },
+                    polygon = external.polygon?.let { toGeoJsonPolygon(it) },
                     exactCoordinates = external.exactCoordinates?.let { toGeoJsonPoint(it) }
             )
         }

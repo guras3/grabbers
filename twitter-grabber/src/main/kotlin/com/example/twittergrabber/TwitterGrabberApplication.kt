@@ -13,6 +13,10 @@ import twitter4j.Status
 import twitter4j.TwitterStreamFactory
 import javax.annotation.PostConstruct
 
+fun main(args: Array<String>) {
+    runApplication<TwitterGrabberApplication>(*args)
+}
+
 @SpringBootApplication
 @EnableDataKafkaProducers
 class TwitterGrabberApplication {
@@ -25,7 +29,11 @@ class TwitterGrabberApplication {
     lateinit var kafka: KafkaTemplate<String, Message>
 
     @PostConstruct
-    fun openStream() {
+    fun init() {
+        Thread { openTwitterStream() }.start()
+    }
+
+    private fun openTwitterStream() {
         val twitterStream = twitterStreamFactory.instance
 
         val filterQuery = FilterQuery(
@@ -39,10 +47,10 @@ class TwitterGrabberApplication {
         twitterStream.onException { ex -> logger.error(ex) { } }
                 .onStatus { status ->
                     val message = convertToMessage(status)
+                    logger.info { "sending message with id [${message.id}]" }
                     kafka.send("messages", message.id, message)
                 }
                 .filter(filterQuery)
-
     }
 
     private fun convertToMessage(status: Status) = Message(
@@ -69,7 +77,7 @@ class TwitterGrabberApplication {
                 Location(country = status.place.country,
                         locationType = status.place.placeType,
                         locationName = status.place.fullName,
-                        boundingBox = points,
+                        polygon = points,
                         exactCoordinates = exactCoordinates
                 )
             }
@@ -81,8 +89,4 @@ class TwitterGrabberApplication {
     }
 
     private fun GeoLocation.toGeoJsonPoint() = GeoPoint(longitude = this.longitude, latitude = this.latitude)
-}
-
-fun main(args: Array<String>) {
-    runApplication<TwitterGrabberApplication>(*args)
 }

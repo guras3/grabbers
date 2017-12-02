@@ -8,4 +8,6 @@ class MongoProperties {
     lateinit var host: String
     lateinit var port: String
 
+    lateinit var databaseName: String
+
 }
