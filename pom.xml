@@ -15,6 +15,7 @@
         <module>data-kafka-starter</module>
         <module>data-saver</module>
         <module>twitter-grabber</module>
+        <module>vk-grabber</module>
         <!--<module>map-ui</module>-->
     </modules>
 
