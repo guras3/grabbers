@@ -2,8 +2,8 @@ spring.application.name: twitter-grabber
 spring:
   cloud:
     zookeeper:
+      enabled: false
       connect-string: localhost:2181
       config:
-        enabled: true
         root: configuration
         defaultContext: commons
