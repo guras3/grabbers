@@ -11,6 +11,9 @@ import twitter4j.FilterQuery
 import twitter4j.GeoLocation
 import twitter4j.Status
 import twitter4j.TwitterStreamFactory
+import java.io.BufferedReader
+import java.io.InputStreamReader
+import java.util.stream.Collectors
 import javax.annotation.PostConstruct
 
 fun main(args: Array<String>) {
@@ -33,24 +36,35 @@ class TwitterGrabberApplication {
         Thread { openTwitterStream() }.start()
     }
 
+    fun collectTrackKeywords(): Array<String> {
+        val inputStream = this.javaClass.classLoader.getResourceAsStream("track-keywords.txt")
+        return BufferedReader(InputStreamReader(inputStream)).use {
+            it.lines().collect(Collectors.toList()).toTypedArray()
+        }
+    }
+
     private fun openTwitterStream() {
         val twitterStream = twitterStreamFactory.instance
+
+        val trackKeywords = collectTrackKeywords()
 
         val filterQuery = FilterQuery(
                 0,
                 null,
+                trackKeywords,
                 null,
-                arrayOf(doubleArrayOf(22.284086, 35.970508),
-                        doubleArrayOf(158.162992, 73.843899)),
-                arrayOf("ru"))
+                null)
 
-        twitterStream.onException { ex -> logger.error(ex) { } }
-                .onStatus { status ->
-                    val message = convertToMessage(status)
-                    logger.info { "sending message with id [${message.id}]" }
-                    kafka.send("messages", message.id, message)
-                }
+        twitterStream
+                .onException { ex -> logger.error(ex) { } }
+                .onStatus(this::convertAndSend)
                 .filter(filterQuery)
+    }
+
+    private fun convertAndSend(status: Status) {
+        val message = convertToMessage(status)
+        logger.debug { "sending message: [$message]" }
+        kafka.send("messages", message.id, message)
     }
 
     private fun convertToMessage(status: Status) = Message(
@@ -69,23 +83,22 @@ class TwitterGrabberApplication {
             location = buildLocation(status)
     )
 
-    private fun buildLocation(status: Status): Location {
-        return when (status.place.boundingBoxType) {
-            "Polygon" -> {
-                val points = status.place.boundingBoxCoordinates[0].map { it.toGeoJsonPoint() }
-                val exactCoordinates = status.geoLocation?.let { it.toGeoJsonPoint() }
-                Location(country = status.place.country,
-                        locationType = status.place.placeType,
-                        locationName = status.place.fullName,
-                        polygon = points,
-                        exactCoordinates = exactCoordinates
-                )
-            }
-            else -> {
-                logger.error { "unknown location type in $status" }
-                throw RuntimeException("unknown location type in ${status.place}")
-            }
-        }
+    private fun buildLocation(status: Status): Location? {
+        if (status.place == null && status.geoLocation == null) return null
+
+        val points = if (status.place?.boundingBoxType == "Polygon") {
+            status.place.boundingBoxCoordinates[0].map { it.toGeoJsonPoint() }
+        } else null
+
+        val exactCoordinates = status.geoLocation?.toGeoJsonPoint()
+
+        return Location(
+                country = status.place.country,
+                locationType = status.place.placeType,
+                locationName = status.place.fullName,
+                polygon = points,
+                exactCoordinates = exactCoordinates
+        )
     }
 
     private fun GeoLocation.toGeoJsonPoint() = GeoPoint(longitude = this.longitude, latitude = this.latitude)

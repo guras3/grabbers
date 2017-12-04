@@ -1,6 +1,5 @@
 package com.example.domain
 
-
 data class Location(
         val country: String?,
         val locationType: String?,
