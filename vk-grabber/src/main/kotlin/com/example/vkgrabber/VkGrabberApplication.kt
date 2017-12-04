@@ -53,7 +53,7 @@ class VkGrabberApplication {
 
         val listener = object : WSMessageListener(streamingClient.gson, idiotHandler) {
             override fun onError(t: Throwable?) {
-                logger.info { "something crashed... reopening stream" }
+                logger.info { "something crashed... reopening stream..." }
                 openVkStream()
             }
         }

@@ -4,6 +4,7 @@ import com.example.domain.*
 import com.example.kafka.EnableDataKafkaProducers
 import mu.KLogging
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 import org.springframework.kafka.core.KafkaTemplate
@@ -11,9 +12,6 @@ import twitter4j.FilterQuery
 import twitter4j.GeoLocation
 import twitter4j.Status
 import twitter4j.TwitterStreamFactory
-import java.io.BufferedReader
-import java.io.InputStreamReader
-import java.util.stream.Collectors
 import javax.annotation.PostConstruct
 
 fun main(args: Array<String>) {
@@ -30,6 +28,8 @@ class TwitterGrabberApplication {
     lateinit var twitterStreamFactory: TwitterStreamFactory
     @Autowired
     lateinit var kafka: KafkaTemplate<String, Message>
+    @Value("\${trackKeywords}")
+    lateinit var trackKeywords: String
 
     @PostConstruct
     fun init() {
@@ -37,10 +37,7 @@ class TwitterGrabberApplication {
     }
 
     fun collectTrackKeywords(): Array<String> {
-        val inputStream = this.javaClass.classLoader.getResourceAsStream("track-keywords.txt")
-        return BufferedReader(InputStreamReader(inputStream)).use {
-            it.lines().collect(Collectors.toList()).toTypedArray()
-        }
+        return trackKeywords.lines().toTypedArray()
     }
 
     private fun openTwitterStream() {
