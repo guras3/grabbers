@@ -31,7 +31,6 @@ class VkConfig {
     fun vkStreamingActorFactory(vkProperties: VkProperties): StreamingActor {
         val vkClient = vkClientFactory()
         val actor = ServiceActor(vkProperties.oauth.appId.toInt(), vkProperties.oauth.accessToken)
-
         val getServerUrlResponse = vkClient.streaming().getServerUrl(actor).also { it.method }.execute()
         return StreamingActor(getServerUrlResponse.endpoint, getServerUrlResponse.key)
     }
