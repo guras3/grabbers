@@ -17,7 +17,7 @@ class TwitterService {
     @Autowired
     private lateinit var twitterStreamFactory: TwitterStreamFactory
 
-    fun createPublisher(twitterStreamRequest: TwitterStreamRequest): Flux<Status> {
+    fun streamStatuses(twitterStreamRequest: TwitterStreamRequest): Flux<Status> {
         val filterQuery = toFilterQuery(twitterStreamRequest)
 
         val twitterStream = twitterStreamFactory.instance

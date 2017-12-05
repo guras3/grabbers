@@ -30,9 +30,9 @@ private fun buildLocation(status: Status): Location? {
     val exactCoordinates = status.geoLocation?.toGeoJsonPoint()
 
     return Location(
-            country = status.place.country,
-            locationType = status.place.placeType,
-            locationName = status.place.fullName,
+            country = status.place?.country,
+            locationType = status.place?.placeType,
+            locationName = status.place?.fullName,
             polygon = points,
             exactCoordinates = exactCoordinates
     )
