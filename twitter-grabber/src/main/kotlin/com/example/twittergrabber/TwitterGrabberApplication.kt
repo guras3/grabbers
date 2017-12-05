@@ -1,17 +1,17 @@
 package com.example.twittergrabber
 
-import com.example.domain.*
-import com.example.kafka.EnableDataKafkaProducers
+import com.example.domain.Message
+import com.example.kafka.EnableDataKafkaReactiveProducers
+import com.example.twittergrabber.services.TwitterService
+import com.example.twittergrabber.services.TwitterStreamRequest
 import mu.KLogging
+import org.apache.kafka.clients.producer.ProducerRecord
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
-import org.springframework.kafka.core.KafkaTemplate
-import twitter4j.FilterQuery
-import twitter4j.GeoLocation
-import twitter4j.Status
-import twitter4j.TwitterStreamFactory
+import reactor.kafka.sender.KafkaSender
+import reactor.kafka.sender.SenderRecord
 import javax.annotation.PostConstruct
 
 fun main(args: Array<String>) {
@@ -19,84 +19,41 @@ fun main(args: Array<String>) {
 }
 
 @SpringBootApplication
-@EnableDataKafkaProducers
+@EnableDataKafkaReactiveProducers
 class TwitterGrabberApplication {
 
     private companion object : KLogging()
 
     @Autowired
-    lateinit var twitterStreamFactory: TwitterStreamFactory
+    private lateinit var twitterService: TwitterService
     @Autowired
-    lateinit var kafka: KafkaTemplate<String, Message>
+    private lateinit var kafkaSender: KafkaSender<String, Message>
+
     @Value("\${trackKeywords}")
-    lateinit var trackKeywords: String
+    private lateinit var trackKeywords: String
 
     @PostConstruct
     fun init() {
         Thread { openTwitterStream() }.start()
     }
 
+    private fun openTwitterStream() {
+        val twitterStreamRequest = TwitterStreamRequest(trackKeywords = collectTrackKeywords())
+
+        val messagePublisher = twitterService
+                .createPublisher(twitterStreamRequest)
+                .map(::convertToMessage)
+
+        val kafkaMessagePublisher = messagePublisher
+                .map { ProducerRecord("messages", it.id, it) }
+                .map { SenderRecord.create(it, null) }
+
+        kafkaSender.send(kafkaMessagePublisher).subscribe()
+    }
+
+
     fun collectTrackKeywords(): Array<String> {
         return trackKeywords.lines().toTypedArray()
     }
 
-    private fun openTwitterStream() {
-        val twitterStream = twitterStreamFactory.instance
-
-        val trackKeywords = collectTrackKeywords()
-
-        val filterQuery = FilterQuery(
-                0,
-                null,
-                trackKeywords,
-                null,
-                null)
-
-        twitterStream
-                .onException { ex -> logger.error(ex) { } }
-                .onStatus(this::convertAndSend)
-                .filter(filterQuery)
-    }
-
-    private fun convertAndSend(status: Status) {
-        val message = convertToMessage(status)
-        logger.debug { "sending message: [$message]" }
-        kafka.send("messages", message.id, message)
-    }
-
-    private fun convertToMessage(status: Status) = Message(
-            text = status.text,
-            messageType = MessageTypeEnum.POST,
-            origin = Origin(
-                    service = ServiceEnum.TWITTER,
-                    externalMessageId = status.id.toString(),
-                    creationDate = status.createdAt,
-                    author = Author(
-                            externalAuthorId = status.user.id.toString(),
-                            name = status.user.name,
-                            gender = GenderEnum.UNDEFINED
-                    )
-            ),
-            location = buildLocation(status)
-    )
-
-    private fun buildLocation(status: Status): Location? {
-        if (status.place == null && status.geoLocation == null) return null
-
-        val points = if (status.place?.boundingBoxType == "Polygon") {
-            status.place.boundingBoxCoordinates[0].map { it.toGeoJsonPoint() }
-        } else null
-
-        val exactCoordinates = status.geoLocation?.toGeoJsonPoint()
-
-        return Location(
-                country = status.place.country,
-                locationType = status.place.placeType,
-                locationName = status.place.fullName,
-                polygon = points,
-                exactCoordinates = exactCoordinates
-        )
-    }
-
-    private fun GeoLocation.toGeoJsonPoint() = GeoPoint(longitude = this.longitude, latitude = this.latitude)
 }
