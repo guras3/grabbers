@@ -1,9 +1,0 @@
-#spring.application.name: twitter-grabber
-#spring:
-#  cloud:
-#    zookeeper:
-#      enabled: false
-#      connect-string: localhost:2181
-#      config:
-#        root: configuration
-#        defaultContext: commons

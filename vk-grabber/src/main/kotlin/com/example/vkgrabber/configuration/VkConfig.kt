@@ -1,4 +1,4 @@
-package com.example.vkgrabber
+package com.example.vkgrabber.configuration
 
 import com.vk.api.sdk.client.VkApiClient
 import com.vk.api.sdk.client.actors.ServiceActor

@@ -1,4 +1,4 @@
-package com.example.vkgrabber
+package com.example.vkgrabber.configuration
 
 import org.springframework.boot.context.properties.ConfigurationProperties
 
