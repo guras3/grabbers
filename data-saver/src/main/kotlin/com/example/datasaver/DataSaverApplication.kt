@@ -34,7 +34,7 @@ class DataSaverApplication {
         val messages = kafkaMessageReceiver.receive()
                 .map(MongoMessage.Companion::fromExternal)
 
-        messageRepository.saveAll(messages).subscribe()
+        messageRepository.saveAll(messages).retry().subscribe()
     }
 
 }

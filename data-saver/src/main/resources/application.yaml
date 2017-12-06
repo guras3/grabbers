@@ -7,4 +7,4 @@ data.kafka.consumers:
   bootstrapServers:
     - 127.0.0.1:9092
   groupId: "data-saver"
-  concurrency: 4
+  concurrency: 1
