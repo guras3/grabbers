@@ -1,6 +1,6 @@
 package com.example.twittergrabber.services
 
-data class TwitterStreamRequest(
+data class TwitterStatusesFilter(
         val previousStatusesCount: Int? = null,
         val followUserIds: LongArray? = null,
         val trackKeywords: Array<String>? = null,

@@ -2,8 +2,8 @@ package com.example.twittergrabber
 
 import com.example.kafka.EnableMessageSender
 import com.example.kafka.services.sender.MessageSender
-import com.example.twittergrabber.services.TwitterService
-import com.example.twittergrabber.services.TwitterStreamRequest
+import com.example.twittergrabber.services.TwitterReceiver
+import com.example.twittergrabber.services.TwitterStatusesFilter
 import mu.KLogging
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
@@ -22,7 +22,7 @@ class TwitterGrabberApplication {
     private companion object : KLogging()
 
     @Autowired
-    private lateinit var twitterService: TwitterService
+    private lateinit var twitterReceiver: TwitterReceiver
     @Autowired
     private lateinit var messageSender: MessageSender
 
@@ -35,13 +35,13 @@ class TwitterGrabberApplication {
     }
 
     private fun openTwitterStream() {
-        val twitterStreamRequest = TwitterStreamRequest(trackKeywords = collectTrackKeywords())
+        val twitterStreamRequest = TwitterStatusesFilter(trackKeywords = collectTrackKeywords())
 
-        val messages = twitterService
-                .streamStatuses(twitterStreamRequest)
-                .map(::convertToMessage)
+        val messages = twitterReceiver
+                .receiveStatuses(twitterStreamRequest)
+                .flatMap(Converter::convertToMessage)
 
-        messageSender.send(messages)
+        messageSender.send(messages).subscribe()
     }
 
     fun collectTrackKeywords(): Array<String> {

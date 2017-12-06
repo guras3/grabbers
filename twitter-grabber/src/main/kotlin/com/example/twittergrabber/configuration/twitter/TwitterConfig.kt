@@ -13,6 +13,8 @@ class TwitterConfig {
     @Bean
     fun twitterStreamFactory(twitterProperties: TwitterProperties): TwitterStreamFactory {
         val configuration = ConfigurationBuilder()
+                .setMBeanEnabled(true)
+                .setAsyncNumThreads(1) /* работать будет наш поток, этот будет отвечать только за маппинг и передачу нам объекта */
                 .setOAuthConsumerKey(twitterProperties.oauth.consumerKey)
                 .setOAuthConsumerSecret(twitterProperties.oauth.consumerSecret)
                 .setOAuthAccessToken(twitterProperties.oauth.accessToken)

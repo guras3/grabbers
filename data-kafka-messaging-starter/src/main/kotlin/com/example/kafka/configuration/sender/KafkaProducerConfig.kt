@@ -8,9 +8,11 @@ import org.apache.kafka.common.serialization.StringSerializer
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import reactor.core.scheduler.Schedulers
 import reactor.kafka.sender.KafkaSender
 import reactor.kafka.sender.SenderOptions
 import reactor.kafka.sender.internals.DefaultKafkaSender
+import reactor.util.concurrent.Queues
 import java.util.*
 
 @Configuration
@@ -30,7 +32,9 @@ class KafkaProducerConfig {
         val producerProps = HashMap<String, Any>()
         producerProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, producerProperties.bootstrapServers!!)
 
-        val senderOptions = SenderOptions.create<String, Message>(producerProps).maxInFlight(1024)
+        val senderOptions = SenderOptions.create<String, Message>(producerProps)
+                .maxInFlight(Queues.SMALL_BUFFER_SIZE)
+                .scheduler(Schedulers.newSingle("kafka-send-result-worker"))
 
         val factory = SerializationAwareProducerFactory(StringSerializer(), messageJacksonMapper)
         val sender = DefaultKafkaSender(factory, senderOptions)

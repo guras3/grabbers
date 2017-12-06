@@ -5,20 +5,21 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import reactor.core.publisher.Flux
 import reactor.core.publisher.FluxSink
+import reactor.core.scheduler.Schedulers
 import twitter4j.FilterQuery
 import twitter4j.Status
 import twitter4j.TwitterStreamFactory
 
 @Component
-class TwitterService {
+class TwitterReceiver {
 
     private companion object : KLogging()
 
     @Autowired
     private lateinit var twitterStreamFactory: TwitterStreamFactory
 
-    fun streamStatuses(twitterStreamRequest: TwitterStreamRequest): Flux<Status> {
-        val filterQuery = toFilterQuery(twitterStreamRequest)
+    fun receiveStatuses(twitterStatusesFilter: TwitterStatusesFilter): Flux<Status> {
+        val filterQuery = toFilterQuery(twitterStatusesFilter)
 
         val twitterStream = twitterStreamFactory.instance
         return Flux.push<Status>({ emitter ->
@@ -26,17 +27,17 @@ class TwitterService {
                     .onException { ex -> logger.error(ex) { } }
                     .onStatus { emitter.next(it) }
                     .filter(filterQuery)
-        }, FluxSink.OverflowStrategy.ERROR)
-
+        }, FluxSink.OverflowStrategy.BUFFER)
+                .publishOn(Schedulers.newSingle("twitter-grabber-worker"))
     }
 
-    private fun toFilterQuery(twitterStreamRequest: TwitterStreamRequest): FilterQuery {
+    private fun toFilterQuery(twitterStatusesFilter: TwitterStatusesFilter): FilterQuery {
         return FilterQuery(
-                twitterStreamRequest.previousStatusesCount ?: 0,
-                twitterStreamRequest.followUserIds,
-                twitterStreamRequest.trackKeywords,
-                twitterStreamRequest.locations,
-                twitterStreamRequest.languages
+                twitterStatusesFilter.previousStatusesCount ?: 0,
+                twitterStatusesFilter.followUserIds,
+                twitterStatusesFilter.trackKeywords,
+                twitterStatusesFilter.locations,
+                twitterStatusesFilter.languages
         )
     }
 
