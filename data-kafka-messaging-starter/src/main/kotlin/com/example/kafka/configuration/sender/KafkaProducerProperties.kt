@@ -1,4 +1,4 @@
-package com.example.kafka.configuration.producers
+package com.example.kafka.configuration.sender
 
 import org.springframework.boot.context.properties.ConfigurationProperties
 

@@ -12,7 +12,7 @@
 
     <modules>
         <module>data-api</module>
-        <module>data-kafka-starter</module>
+        <module>data-kafka-messaging-starter</module>
         <module>data-saver</module>
         <module>twitter-grabber</module>
         <module>vk-grabber</module>
@@ -55,11 +55,6 @@
                 <groupId>org.twitter4j</groupId>
                 <artifactId>twitter4j-async</artifactId>
                 <version>4.0.6</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework.cloud</groupId>
-                <artifactId>spring-cloud-starter-zookeeper-config</artifactId>
-                <version>2.0.0.M3</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

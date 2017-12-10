@@ -1,4 +1,4 @@
-package com.example.kafka.configuration.consumers
+package com.example.kafka.configuration.receiver
 
 import org.springframework.boot.context.properties.ConfigurationProperties
 

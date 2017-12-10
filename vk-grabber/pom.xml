@@ -78,7 +78,7 @@
 
         <dependency>
             <groupId>com.example</groupId>
-            <artifactId>data-kafka-starter</artifactId>
+            <artifactId>data-kafka-messaging-starter</artifactId>
             <version>${project.version}</version>
         </dependency>
 
