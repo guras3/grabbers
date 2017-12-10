@@ -8,3 +8,7 @@ data.kafka.consumers:
     - 127.0.0.1:9092
   groupId: "data-saver"
   concurrency: 1
+#logging.level.reactor.kafka.receiver: info
+#logging.level.org.springframework.data.mongodb: debug
+#logging.level.org.mongodb: debug
+#logging.level.com.example.datasaver.configuration.mongodb: debug
