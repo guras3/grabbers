@@ -44,7 +44,7 @@ class TwitterGrabberApplication {
         messageSender.send(messages).subscribe()
     }
 
-    fun collectTrackKeywords(): Array<String> {
+    private fun collectTrackKeywords(): Array<String> {
         return trackKeywords.lines().toTypedArray()
     }
 
