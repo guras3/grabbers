@@ -6,6 +6,7 @@ import com.mongodb.connection.ClusterConnectionMode
 import com.mongodb.connection.ClusterSettings
 import com.mongodb.connection.ClusterType
 import com.mongodb.connection.ConnectionPoolSettings
+import com.mongodb.management.JMXConnectionPoolListener
 import com.mongodb.reactivestreams.client.MongoClient
 import com.mongodb.reactivestreams.client.MongoClients
 import org.springframework.beans.factory.annotation.Autowired
@@ -39,11 +40,13 @@ class MongoConfig : AbstractReactiveMongoConfiguration() {
                 .maxConnectionIdleTime(1, TimeUnit.MINUTES)
                 .maxWaitQueueSize(500)
                 .maxWaitTime(20, TimeUnit.SECONDS)
+                .addConnectionPoolListener(JMXConnectionPoolListener())
                 .build()
 
         val settings = MongoClientSettings.builder()
                 .clusterSettings(clusterSettings)
                 .connectionPoolSettings(connectionPoolSettings)
+                .addCommandListener(MetricsCommandListner)
                 .build()
 
         return MongoClients.create(settings)

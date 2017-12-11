@@ -9,24 +9,25 @@ import twitter4j.Status
 object Converter : KLogging() {
 
     fun convertToMessage(status: Status): Mono<Message> {
-        return Mono.fromCallable {
-            Message(
-                    text = status.text,
-                    messageType = MessageTypeEnum.POST,
-                    origin = Origin(
-                            service = ServiceEnum.TWITTER,
-                            externalMessageId = status.id.toString(),
-                            creationDate = status.createdAt,
-                            author = Author(
-                                    externalAuthorId = status.user.id.toString(),
-                                    name = status.user.name,
-                                    gender = GenderEnum.UNDEFINED
-                            )
-                    ),
-                    location = buildLocation(status)
-            )
-        }
-                .doOnError { ex -> logger.error(ex) { } }
+        return Mono.fromCallable(
+                {
+                    Message(
+                            text = status.text,
+                            messageType = MessageTypeEnum.POST,
+                            origin = Origin(
+                                    service = ServiceEnum.TWITTER,
+                                    externalMessageId = status.id.toString(),
+                                    creationDate = status.createdAt,
+                                    author = Author(
+                                            externalAuthorId = status.user.id.toString(),
+                                            name = status.user.name,
+                                            gender = GenderEnum.UNDEFINED
+                                    )
+                            ),
+                            location = buildLocation(status)
+                    )
+                })
+                .doOnError { ex -> logger.error(ex, { "unable to convert $status" }) }
                 .onErrorResume { Mono.empty() }
     }
 

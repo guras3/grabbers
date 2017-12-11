@@ -8,6 +8,8 @@ import mu.KLogging
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
+import reactor.core.publisher.SignalType
+import java.util.logging.Level
 import javax.annotation.PostConstruct
 
 fun main(args: Array<String>) {
@@ -26,15 +28,15 @@ class DataSaverApplication {
     private lateinit var messageRepository: MessageRepository
 
     @PostConstruct
-    fun init() {
-        Thread { saveMessages() }.start()
-    }
-
     fun saveMessages() {
         val messages = kafkaMessageReceiver.receive()
                 .map(MongoMessage.Companion::fromExternal)
-
-        messageRepository.saveAll(messages).retry().subscribe()
+                .buffer(8)
+                .flatMap { messageRepository.saveAll(it) }
+                //FIXME: т.к. внутри сообщений уже есть id  по факту вставка идет по одному
+                .log("after save", Level.SEVERE, SignalType.ON_ERROR)
+                .retry()
+                .subscribe()
     }
 
 }

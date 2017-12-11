@@ -24,6 +24,7 @@ class KafkaMessageSender(private val kafkaSender: KafkaSender<String, Message>) 
     }
 
     private fun extractSenderError(senderResult: SenderResult<Message>): Mono<SenderError> {
+        logger.trace { "senderResult = $senderResult" }
         return if (senderResult.exception() != null) {
             Mono.just(SenderError(senderResult.correlationMetadata(), senderResult.exception()))
         } else Mono.empty()
