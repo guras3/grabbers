@@ -1,13 +1,14 @@
 package com.example.datasaver
 
 import com.example.datasaver.model.MongoMessage
-import com.example.datasaver.repositories.MessageRepository
 import com.example.kafka.EnableMessageReceiver
 import com.example.kafka.services.receiver.MessageReceiver
 import mu.KLogging
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
+import org.springframework.data.mongodb.core.ReactiveMongoTemplate
+import reactor.core.publisher.Flux
 import reactor.core.publisher.SignalType
 import java.util.logging.Level
 import javax.annotation.PostConstruct
@@ -25,17 +26,18 @@ class DataSaverApplication {
     @Autowired
     private lateinit var kafkaMessageReceiver: MessageReceiver
     @Autowired
-    private lateinit var messageRepository: MessageRepository
+    private lateinit var reactiveMongoTemplate: ReactiveMongoTemplate
 
     @PostConstruct
     fun saveMessages() {
         val messages = kafkaMessageReceiver.receive()
                 .map(MongoMessage.Companion::fromExternal)
-                .buffer(8)
-                .flatMap { messageRepository.saveAll(it) }
-                //FIXME: т.к. внутри сообщений уже есть id  по факту вставка идет по одному
-                .log("after save", Level.SEVERE, SignalType.ON_ERROR)
-                .retry()
+                .buffer(16)
+                .flatMap { batch ->
+                    reactiveMongoTemplate.insertAll(batch)
+                            .log("error during insertAll", Level.SEVERE, SignalType.ON_ERROR)
+                            .onErrorResume { Flux.empty() }
+                }
                 .subscribe()
     }
 

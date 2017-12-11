@@ -7,6 +7,7 @@ import com.mongodb.event.CommandListener
 import com.mongodb.event.CommandStartedEvent
 import com.mongodb.event.CommandSucceededEvent
 import mu.KLogging
+import org.bson.BsonInt32
 import java.util.concurrent.TimeUnit
 
 object MetricsCommandListner : CommandListener, KLogging() {
@@ -15,22 +16,25 @@ object MetricsCommandListner : CommandListener, KLogging() {
         it.start()
     };
 
-    val commandStarted = registry.meter("commandStarted")
-    val commandFailed = registry.meter("commandFailed")
-    val commandSucceeded = registry.meter("commandSucceeded")
-
     override fun commandStarted(event: CommandStartedEvent) {
         logger.debug { "commandStarted requestId=${event.requestId} ${event.command}" }
-        commandStarted.mark()
+        val cnt = when (event.commandName) {
+            "insert" -> event.command.getArray("documents").size.toLong()
+            else -> 1L
+        }
+
+        registry.meter("started:${event.commandName}")
+                .mark(cnt)
     }
 
     override fun commandFailed(event: CommandFailedEvent) {
         logger.debug { "commandFailed requestId=${event.requestId} took=${event.getElapsedTime(TimeUnit.MILLISECONDS)}ms, error=${event.throwable}" }
-        commandFailed.mark()
+        registry.meter("failed:${event.commandName}").mark()
     }
 
     override fun commandSucceeded(event: CommandSucceededEvent) {
         logger.debug { "commandSucceeded requestId=${event.requestId} took=${event.getElapsedTime(TimeUnit.MILLISECONDS)}ms, response=${event.response}" }
-        commandSucceeded.mark()
+        registry.meter("succeeded:${event.commandName}")
+                .mark(event.response.getNumber("n", BsonInt32(1)).longValue())
     }
 }
