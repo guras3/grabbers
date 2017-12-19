@@ -31,10 +31,6 @@ class TwitterGrabberApplication {
 
     @PostConstruct
     fun init() {
-        Thread { openTwitterStream() }.start()
-    }
-
-    private fun openTwitterStream() {
         val twitterStreamRequest = TwitterStatusesFilter(trackKeywords = collectTrackKeywords())
 
         val messages = twitterReceiver

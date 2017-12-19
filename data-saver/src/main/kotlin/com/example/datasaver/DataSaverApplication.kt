@@ -30,12 +30,13 @@ class DataSaverApplication {
 
     @PostConstruct
     fun saveMessages() {
-        val messages = kafkaMessageReceiver.receive()
+        kafkaMessageReceiver.receive()
                 .map(MongoMessage.Companion::fromExternal)
                 .buffer(16)
                 .flatMap { batch ->
                     reactiveMongoTemplate.insertAll(batch)
                             .log("error during insertAll", Level.SEVERE, SignalType.ON_ERROR)
+                            /* TODO а мы не выкинем всю пачку, если завалится 1 сообщение ? */
                             .onErrorResume { Flux.empty() }
                 }
                 .subscribe()
